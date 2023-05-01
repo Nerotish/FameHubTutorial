@@ -1,0 +1,99 @@
+-- tutorial made by Fames#3045/Akira, Tutorial: https://www.youtube.com/watch?v=t1SrJXoqDI0
+
+--Source Code:
+
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local Camera = game:GetService("Workspace").CurrentCamera
+local UserInputService = game:GetService("UserInputService")
+local TestService = game:GetService("TestService")
+local workspace = game:GetService("Workspace")
+local Player = game.Players.LocalPlayer
+
+getgenv().TeamChecking = false
+getgenv().Tracers = true
+_G.TracerThickness = 1
+_G.TracerTransparency = 0.9
+_G.TracerColor = Color3.fromRGB(0,255,0)
+
+local function Tracers()
+    for _,v in next, Players:GetPlayers() do
+        if v.Name ~= Player.Name then
+            local Tracer = Drawing.new("Line")
+
+            RunService.RenderStepped:Connect(function()
+                if workspace:FindFirstChild(v.Name) ~= nil and workspace[v.Name]:FindFirstChild("HumanoidRootPart") ~= nil then
+                    local HumanoidRootPart_Position, HumanoidRootPart_Size = workspace[v.Name].HumanoidRootPart.CFrame, workspace[v.Name].HumanoidRootPart.Size * 1
+                    local Vector, OnScreen = Camera:WorldToViewportPoint(HumanoidRootPart_Position *  CFrame.new(0, -HumanoidRootPart_Size.Y, 0).p)
+
+                    Tracer.Color = _G.TracerColor
+                    Tracer.Thickness = _G.TracerThickness
+                    Tracer.Transparency = _G.TracerTransparency
+
+                    if OnScreen == true then
+                        Tracer.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
+                        Tracer.To = Vector2.new(Vector.X, Vector.Y)
+                        if getgenv().TeamChecking == true then
+                            if Players.LocalPlayer.Team ~= v.Team then
+                                Tracer.Visible = getgenv().Tracers
+                            else
+                                Tracer.Visible = false
+                            end
+                        else
+                            Tracer.Visible = getgenv().Tracers
+                        end
+                    else
+                        Tracer.Visible = false
+                    end
+                else
+                    Tracer.Visible = false
+                end
+        end)
+        Players.PlayerRemoving:Connect(function()
+            Tracer.Visible = false
+        end)
+    end
+end
+end
+
+Players.PlayerAdded:Connect(function(Player)
+    Player.CharacterAdded:Connect(function(v)
+        if v.Name ~= game.Players.LocalPlayer.Name then 
+            local Tracer = Drawing.new("Line")
+
+            RunService.RenderStepped:Connect(function()
+                if workspace:FindFirstChild(v.Name) ~= nil and workspace[v.Name]:FindFirstChild("HumanoidRootPart") ~= nil then
+                    local HumanoidRootPart_Position, HumanoidRootPart_Size = workspace[v.Name].HumanoidRootPart.CFrame, workspace[v.Name].HumanoidRootPart.Size * 1
+                    local Vector, OnScreen = Camera:WorldToViewportPoint(HumanoidRootPart_Position *  CFrame.new(0, -HumanoidRootPart_Size.Y, 0).p)
+
+                    Tracer.Color = _G.TracerColor
+                    Tracer.Thickness = _G.TracerThickness
+                    Tracer.Transparency = _G.TracerTransparency
+
+                    if OnScreen == true then
+                        Tracer.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
+                        Tracer.To = Vector2.new(Vector.X, Vector.Y)
+                        if getgenv().TeamChecking == true then
+                            if Players.LocalPlayer.Team ~= v.Team then
+                                Tracer.Visible = getgenv().Tracers
+                            else
+                                Tracer.Visible = false
+                            end
+                        else
+                            Tracer.Visible = getgenv().Tracers
+                        end
+                    else
+                        Tracer.Visible = false
+                    end
+                else
+                    Tracer.Visible = false
+                end
+        end)
+        Players.PlayerRemoving:Connect(function()
+            Tracer.Visible = false
+        end)
+    end
+end)
+end)
+
+Tracers()
